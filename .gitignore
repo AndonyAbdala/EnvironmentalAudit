@@ -1,0 +1,98 @@
+ # =========================
+# .NET / Visual Studio
+# =========================
+
+bin/
+obj/
+.vs/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# =========================
+# ASP.NET
+# =========================
+
+wwwroot/
+
+# Logs
+*.log
+
+# =========================
+# Environment / Secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# User secrets
+secrets.json
+
+# =========================
+# Node / React
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+dist/
+build/
+.cache/
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Docker
+# =========================
+
+# Do NOT ignore docker-compose.yml
+# Do NOT ignore Dockerfile
+
+# Local Docker volumes / data
+postgres_data/
+
+# =========================
+# Generated files
+# =========================
+
+*.tmp
+*.temp
