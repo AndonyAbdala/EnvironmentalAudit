@@ -1,4 +1,5 @@
 using EnvironmentalAudit.Api.Data;
+using EnvironmentalAudit.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Services
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 // Controllers
 builder.Services.AddControllers();
