@@ -11,13 +11,16 @@ public class AuditsController : ControllerBase
     private readonly IAuditService _auditService;
     private readonly ICalculationService _calculationService;
 
-    public AuditsController(IAuditService auditService, ICalculationService calculationService)
+    public AuditsController(
+        IAuditService auditService,
+        ICalculationService calculationService)
     {
         _auditService = auditService;
         _calculationService = calculationService;
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AuditResponse>>> GetAudits()
     {
         var audits = await _auditService.GetAuditsAsync();
@@ -26,6 +29,8 @@ public class AuditsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AuditResponse>> GetAudit(Guid id)
     {
         var audit = await _auditService.GetAuditByIdAsync(id);
@@ -39,6 +44,7 @@ public class AuditsController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<AuditResponse>> CreateAudit(
         CreateAuditRequest request)
     {
@@ -51,9 +57,11 @@ public class AuditsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/calculate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AuditResultResponse>> Calculate(
-    Guid id,
-    CreateAuditDataRequest request)
+        Guid id,
+        CreateAuditDataRequest request)
     {
         try
         {
