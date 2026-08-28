@@ -11,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<ICalculationService, CalculationService>();
 
 // Controllers
 builder.Services.AddControllers();

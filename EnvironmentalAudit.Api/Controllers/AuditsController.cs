@@ -9,10 +9,12 @@ namespace EnvironmentalAudit.Api.Controllers;
 public class AuditsController : ControllerBase
 {
     private readonly IAuditService _auditService;
+    private readonly ICalculationService _calculationService;
 
-    public AuditsController(IAuditService auditService)
+    public AuditsController(IAuditService auditService, ICalculationService calculationService)
     {
         _auditService = auditService;
+        _calculationService = calculationService;
     }
 
     [HttpGet]
@@ -46,5 +48,24 @@ public class AuditsController : ControllerBase
             nameof(GetAudit),
             new { id = audit.Id },
             audit);
+    }
+
+    [HttpPost("{id:guid}/calculate")]
+    public async Task<ActionResult<AuditResultResponse>> Calculate(
+    Guid id,
+    CreateAuditDataRequest request)
+    {
+        try
+        {
+            var result = await _calculationService.CalculateAsync(
+                id,
+                request);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }
