@@ -10,13 +10,16 @@ public class AuditsController : ControllerBase
 {
     private readonly IAuditService _auditService;
     private readonly ICalculationService _calculationService;
+    private readonly IReportService _reportService;
 
     public AuditsController(
         IAuditService auditService,
-        ICalculationService calculationService)
+        ICalculationService calculationService,
+        IReportService reportService)
     {
         _auditService = auditService;
         _calculationService = calculationService;
+        _reportService = reportService;
     }
 
     [HttpGet]
@@ -74,6 +77,32 @@ public class AuditsController : ControllerBase
         catch (KeyNotFoundException)
         {
             return NotFound();
+        }
+    }
+
+    [HttpGet("{id:guid}/report")]
+    [Produces("application/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetReport(Guid id)
+    {
+        try
+        {
+            var pdf = await _reportService.GenerateAuditReportAsync(id);
+
+            return File(
+                pdf,
+                "application/pdf",
+                $"environmental-audit-{id}.pdf");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }

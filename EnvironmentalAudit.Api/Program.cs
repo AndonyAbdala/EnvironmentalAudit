@@ -1,8 +1,11 @@
 using EnvironmentalAudit.Api.Data;
 using EnvironmentalAudit.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Entity Framework Core
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -12,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Services
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<ICalculationService, CalculationService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Controllers
 builder.Services.AddControllers();
