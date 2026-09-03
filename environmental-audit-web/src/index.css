@@ -134,3 +134,57 @@ button {
 .error {
   color: #b00020;
 }
+
+.audit-detail-header {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin: 20px 0;
+}
+
+.audit-detail-header h2 {
+  margin-top: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  border-radius: 6px 6px 0 0;
+}
+
+.tabs .active-tab {
+  background: #222;
+  color: white;
+}
+
+.environmental-form {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 20px;
+}
+
+.environmental-form h3 {
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.environmental-form .form-group {
+  position: relative;
+}
+
+.environmental-form .form-group span {
+  margin-top: 5px;
+  color: #777;
+  font-size: 13px;
+}
+
+.calculate-button {
+  margin-top: 10px;
+}

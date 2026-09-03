@@ -7,11 +7,13 @@ import {
 } from './services/auditService';
 
 import CreateAuditForm from './components/CreateAuditForm';
+import AuditDetail from './components/AuditDetail';
 
 function App() {
   const [audits, setAudits] = useState<Audit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedAuditId, setSelectedAuditId] = useState<string | null>(null);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
 
@@ -33,6 +35,31 @@ function App() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (selectedAuditId) {
+    return (
+      <div className="app">
+
+        <header className="header">
+          <h1>
+            Environmental Audit POC
+          </h1>
+        </header>
+
+        <main className="container">
+
+          <AuditDetail
+            auditId={selectedAuditId}
+            onBack={() => {
+              setSelectedAuditId(null);
+            }}
+          />
+
+        </main>
+
+      </div>
+    );
   }
 
   if (showCreateForm) {
@@ -139,7 +166,11 @@ function App() {
 
               <div className="card-actions">
 
-                <button>
+                <button
+                  onClick={() => {
+                    setSelectedAuditId(audit.id);
+                  }}
+                >
                   Ver
                 </button>
 

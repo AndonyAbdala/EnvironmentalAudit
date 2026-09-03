@@ -29,6 +29,20 @@ export async function getAudits(): Promise<Audit[]> {
   return response.json();
 }
 
+export async function getAudit(
+  id: string
+): Promise<Audit> {
+  const response = await fetch(
+    `${API_URL}/Audits/${id}`
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch audit');
+  }
+
+  return response.json();
+}
+
 export async function createAudit(
   request: CreateAuditRequest
 ): Promise<Audit> {
