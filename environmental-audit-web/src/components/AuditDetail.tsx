@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 import {
   getAudit,
   calculateAudit,
   type Audit,
   type CalculateAuditRequest,
-  type AuditCalculationResult
-} from '../services/auditService';
+  type AuditCalculationResult,
+} from "../services/auditService";
 
 interface Props {
   auditId: string;
@@ -14,34 +14,23 @@ interface Props {
 }
 
 function AuditDetail({ auditId, onBack }: Props) {
-    const [audit, setAudit] = useState<Audit | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [electricityKwh, setElectricityKwh] =
-    useState('');
-    const [naturalGasM3, setNaturalGasM3] =
-    useState('');
-    const [waterConsumptionM3, setWaterConsumptionM3] =
-    useState('');
-    const [wastewaterM3, setWastewaterM3] =
-    useState('');
-    const [hazardousWasteKg, setHazardousWasteKg] =
-    useState('');
-    const [nonHazardousWasteKg, setNonHazardousWasteKg] =
-    useState('');
-    const [recycledWasteKg, setRecycledWasteKg] =
-    useState('');
-    const [dieselLiters, setDieselLiters] =
-    useState('');
-    const [gasolineLiters, setGasolineLiters] =
-    useState('');
-    const [result, setResult] =
-  useState<AuditCalculationResult | null>(null);
+  const [audit, setAudit] = useState<Audit | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("energy");
+  const [electricityKwh, setElectricityKwh] = useState("");
+  const [naturalGasM3, setNaturalGasM3] = useState("");
+  const [waterConsumptionM3, setWaterConsumptionM3] = useState("");
+  const [wastewaterM3, setWastewaterM3] = useState("");
+  const [hazardousWasteKg, setHazardousWasteKg] = useState("");
+  const [nonHazardousWasteKg, setNonHazardousWasteKg] = useState("");
+  const [recycledWasteKg, setRecycledWasteKg] = useState("");
+  const [dieselLiters, setDieselLiters] = useState("");
+  const [gasolineLiters, setGasolineLiters] = useState("");
+  const [result, setResult] = useState<AuditCalculationResult | null>(null);
 
-const [calculating, setCalculating] =
-  useState(false);
-  const [calculationError, setCalculationError] =
-  useState<string | null>(null);
+  const [calculating, setCalculating] = useState(false);
+  const [calculationError, setCalculationError] = useState<string | null>(null);
 
   useEffect(() => {
     loadAudit();
@@ -55,67 +44,45 @@ const [calculating, setCalculating] =
 
       setAudit(data);
     } catch {
-      setError(
-        'No se pudo cargar la auditoría.'
-      );
+      setError("No se pudo cargar la auditoría.");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleCalculate() {
+    setCalculationError(null);
+    setCalculating(true);
 
-  setCalculationError(null);
-  setCalculating(true);
+    try {
+      const request: CalculateAuditRequest = {
+        electricityKwh: Number(electricityKwh),
+        naturalGasM3: Number(naturalGasM3),
 
-  try {
+        waterConsumptionM3: Number(waterConsumptionM3),
 
-    const request: CalculateAuditRequest = {
-      electricityKwh: Number(electricityKwh),
-      naturalGasM3: Number(naturalGasM3),
+        wastewaterM3: Number(wastewaterM3),
 
-      waterConsumptionM3:
-        Number(waterConsumptionM3),
+        hazardousWasteKg: Number(hazardousWasteKg),
 
-      wastewaterM3:
-        Number(wastewaterM3),
+        nonHazardousWasteKg: Number(nonHazardousWasteKg),
 
-      hazardousWasteKg:
-        Number(hazardousWasteKg),
+        recycledWasteKg: Number(recycledWasteKg),
 
-      nonHazardousWasteKg:
-        Number(nonHazardousWasteKg),
+        dieselLiters: Number(dieselLiters),
 
-      recycledWasteKg:
-        Number(recycledWasteKg),
+        gasolineLiters: Number(gasolineLiters),
+      };
 
-      dieselLiters:
-        Number(dieselLiters),
+      const calculation = await calculateAudit(auditId, request);
 
-      gasolineLiters:
-        Number(gasolineLiters)
-    };
-
-    const calculation =
-      await calculateAudit(
-        auditId,
-        request
-      );
-
-    setResult(calculation);
-
-  } catch {
-
-    setCalculationError(
-      'No se pudo calcular la auditoría.'
-    );
-
-  } finally {
-
-    setCalculating(false);
-
+      setResult(calculation);
+    } catch {
+      setCalculationError("No se pudo calcular la auditoría.");
+    } finally {
+      setCalculating(false);
+    }
   }
-}
 
   if (loading) {
     return <p>Cargando auditoría...</p>;
@@ -131,302 +98,236 @@ const [calculating, setCalculating] =
 
   return (
     <div>
-
-      <button onClick={onBack}>
-        ← Volver
-      </button>
+      <button onClick={onBack}>← Volver</button>
 
       <div className="audit-detail-header">
-
         <h2>{audit.companyName}</h2>
 
         <p>{audit.facilityName}</p>
 
-        <p>
-          Responsable: {audit.responsible}
-        </p>
+        <p>Responsable: {audit.responsible}</p>
 
         <p>
-          Periodo:{' '}
-          {new Date(
-            audit.startDate
-          ).toLocaleDateString()}
-          {' - '}
-          {new Date(
-            audit.endDate
-          ).toLocaleDateString()}
+          Periodo: {new Date(audit.startDate).toLocaleDateString()}
+          {" - "}
+          {new Date(audit.endDate).toLocaleDateString()}
         </p>
 
-        <span className="status">
-          {audit.status}
-        </span>
-
+        <span className="status">{audit.status}</span>
       </div>
 
       <div className="tabs">
-
-        <button className="active-tab">
+        <button
+          className={activeTab === "energy" ? "active-tab" : ""}
+          onClick={() => setActiveTab("energy")}
+        >
           Energía
         </button>
 
-        <button>
+        <button
+          className={activeTab === "water" ? "active-tab" : ""}
+          onClick={() => setActiveTab("water")}
+        >
           Agua
         </button>
 
-        <button>
+        <button
+          className={activeTab === "waste" ? "active-tab" : ""}
+          onClick={() => setActiveTab("waste")}
+        >
           Residuos
         </button>
 
-        <button>
+        <button
+          className={activeTab === "fuel" ? "active-tab" : ""}
+          onClick={() => setActiveTab("fuel")}
+        >
           Combustibles
         </button>
-
       </div>
 
-      <div className="environmental-form">
+      {activeTab === "energy" && (
+        <div className="environmental-form">
+          <h3>Energía</h3>
 
-        <h3>Energía</h3>
-
-        <div className="form-group">
-          <label>
-            Consumo eléctrico
-          </label>
-
-          <input
-            type="number"
-            value={electricityKwh}
-            onChange={(e) =>
-                setElectricityKwh(e.target.value)
-            }
-            placeholder="125000"
-          />
-
-          <span>kWh</span>
-        </div>
-
-        <div className="form-group">
-          <label>
-            Consumo de gas natural
-          </label>
-
-          <input
-            type="number"
-            value={naturalGasM3}
-            onChange={(e) =>
-                setNaturalGasM3(e.target.value)
-            }
-            placeholder="8500"
-            />
-
-          <span>m³</span>
-        </div>
-
-      </div>
-
-      <div className="environmental-form">
-
-        <h3>Agua</h3>
-
-        <div className="form-group">
-            <label>
-            Agua utilizada
-            </label>
+          <div className="form-group">
+            <label>Consumo eléctrico</label>
 
             <input
-                type="number"
-                value={waterConsumptionM3}
-                onChange={(e) =>
-                    setWaterConsumptionM3(e.target.value)
-                }
-                placeholder="1250"
+              type="number"
+              value={electricityKwh}
+              onChange={(e) => setElectricityKwh(e.target.value)}
+              placeholder="125000"
+            />
+
+            <span>kWh</span>
+          </div>
+
+          <div className="form-group">
+            <label>Consumo de gas natural</label>
+
+            <input
+              type="number"
+              value={naturalGasM3}
+              onChange={(e) => setNaturalGasM3(e.target.value)}
+              placeholder="8500"
             />
 
             <span>m³</span>
+          </div>
         </div>
+      )}
 
-        <div className="form-group">
-            <label>
-            Agua residual
-            </label>
+      {activeTab === "water" && (
+        <div className="environmental-form">
+          <h3>Agua</h3>
+
+          <div className="form-group">
+            <label>Agua utilizada</label>
 
             <input
-                type="number"
-                value={wastewaterM3}
-                onChange={(e) =>
-                    setWastewaterM3(e.target.value)
-                }
-                placeholder="900"
+              type="number"
+              value={waterConsumptionM3}
+              onChange={(e) => setWaterConsumptionM3(e.target.value)}
+              placeholder="1250"
             />
 
             <span>m³</span>
+          </div>
+
+          <div className="form-group">
+            <label>Agua residual</label>
+
+            <input
+              type="number"
+              value={wastewaterM3}
+              onChange={(e) => setWastewaterM3(e.target.value)}
+              placeholder="900"
+            />
+
+            <span>m³</span>
+          </div>
         </div>
+      )}
 
-      </div>
+      {activeTab === "waste" && (
+        <div className="environmental-form">
+          <h3>Residuos</h3>
 
-      <div className="environmental-form">
+          <div className="form-group">
+            <label>Residuos peligrosos</label>
 
-  <h3>Residuos</h3>
+            <input
+              type="number"
+              value={hazardousWasteKg}
+              onChange={(e) => setHazardousWasteKg(e.target.value)}
+              placeholder="120"
+            />
 
-  <div className="form-group">
-    <label>
-      Residuos peligrosos
-    </label>
+            <span>kg</span>
+          </div>
 
-    <input
-  type="number"
-  value={hazardousWasteKg}
-  onChange={(e) =>
-    setHazardousWasteKg(e.target.value)
-  }
-  placeholder="120"
-/>
+          <div className="form-group">
+            <label>Residuos no peligrosos</label>
 
-    <span>kg</span>
-  </div>
+            <input
+              type="number"
+              value={nonHazardousWasteKg}
+              onChange={(e) => setNonHazardousWasteKg(e.target.value)}
+              placeholder="850"
+            />
 
-  <div className="form-group">
-    <label>
-      Residuos no peligrosos
-    </label>
+            <span>kg</span>
+          </div>
 
-    <input
-  type="number"
-  value={nonHazardousWasteKg}
-  onChange={(e) =>
-    setNonHazardousWasteKg(e.target.value)
-  }
-  placeholder="850"
-/>
+          <div className="form-group">
+            <label>Residuos reciclados</label>
 
-    <span>kg</span>
-  </div>
+            <input
+              type="number"
+              value={recycledWasteKg}
+              onChange={(e) => setRecycledWasteKg(e.target.value)}
+              placeholder="500"
+            />
 
-  <div className="form-group">
-    <label>
-      Residuos reciclados
-    </label>
+            <span>kg</span>
+          </div>
+        </div>
+      )}
 
-    <input
-  type="number"
-  value={recycledWasteKg}
-  onChange={(e) =>
-    setRecycledWasteKg(e.target.value)
-  }
-  placeholder="500"
-/>
+      {activeTab === "fuel" && (
+        <div className="environmental-form">
+          <h3>Combustibles</h3>
 
-    <span>kg</span>
-  </div>
+          <div className="form-group">
+            <label>Diesel</label>
 
-</div>
+            <input
+              type="number"
+              value={dieselLiters}
+              onChange={(e) => setDieselLiters(e.target.value)}
+              placeholder="2500"
+            />
 
-<div className="environmental-form">
+            <span>L</span>
+          </div>
 
-  <h3>Combustibles</h3>
+          <div className="form-group">
+            <label>Gasolina</label>
 
-  <div className="form-group">
-    <label>
-      Diesel
-    </label>
+            <input
+              type="number"
+              value={gasolineLiters}
+              onChange={(e) => setGasolineLiters(e.target.value)}
+              placeholder="800"
+            />
 
-    <input
-  type="number"
-  value={dieselLiters}
-  onChange={(e) =>
-    setDieselLiters(e.target.value)
-  }
-  placeholder="2500"
-/>
-
-    <span>L</span>
-  </div>
-
-  <div className="form-group">
-    <label>
-      Gasolina
-    </label>
-
-    <input
-  type="number"
-  value={gasolineLiters}
-  onChange={(e) =>
-    setGasolineLiters(e.target.value)
-  }
-  placeholder="800"
-/>
-
-    <span>L</span>
-  </div>
-
-</div>
+            <span>L</span>
+          </div>
+        </div>
+      )}
 
       <button
-      className="primary-button calculate-button"
-      onClick={handleCalculate}
-      disabled={calculating}
-    >
-      {calculating
-        ? 'Calculando...'
-        : 'Calcular auditoría'}
-    </button>
+        className="primary-button calculate-button"
+        onClick={handleCalculate}
+        disabled={calculating}
+      >
+        {calculating ? "Calculando..." : "Calcular auditoría"}
+      </button>
 
-    {calculationError && (
-      <p className="error">
-        {calculationError}
-      </p>
-    )}
+      {calculationError && <p className="error">{calculationError}</p>}
 
-    {result && (
-      <div className="result-card">
+      {result && (
+        <div className="result-card">
+          <h2>Auditoría completada ✓</h2>
 
-        <h2>
-          Auditoría completada ✓
-        </h2>
+          <div className="score">
+            {result.score.toFixed(1)}
+            <span>/ 100</span>
+          </div>
 
-        <div className="score">
-          {result.score.toFixed(1)}
-          <span>/ 100</span>
+          <div className="result-grid">
+            <div>
+              <span>Emisiones</span>
+              <strong>{result.totalEmissions.toFixed(2)}</strong>
+            </div>
+
+            <div>
+              <span>Residuos totales</span>
+              <strong>{result.totalWaste.toFixed(2)} kg</strong>
+            </div>
+
+            <div>
+              <span>Tasa de reciclaje</span>
+              <strong>{result.recyclingRate.toFixed(2)} %</strong>
+            </div>
+          </div>
+
+          <button className="primary-button">Descargar PDF</button>
         </div>
-
-        <div className="result-grid">
-
-          <div>
-            <span>Emisiones</span>
-            <strong>
-              {result.totalEmissions.toFixed(2)}
-            </strong>
-          </div>
-
-          <div>
-            <span>Residuos totales</span>
-            <strong>
-              {result.totalWaste.toFixed(2)} kg
-            </strong>
-          </div>
-
-          <div>
-            <span>Tasa de reciclaje</span>
-            <strong>
-              {result.recyclingRate.toFixed(2)} %
-            </strong>
-          </div>
-
-        </div>
-
-        <button className="primary-button">
-          Descargar PDF
-        </button>
-
-      </div>
-    )}
-
+      )}
     </div>
   );
-
-  
-
-
-  
 }
 
 export default AuditDetail;
