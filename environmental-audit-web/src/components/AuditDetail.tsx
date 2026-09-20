@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
+
 import {
   getAudit,
-  type Audit
+  calculateAudit,
+  type Audit,
+  type CalculateAuditRequest,
+  type AuditCalculationResult
 } from '../services/auditService';
 
 interface Props {
@@ -17,6 +21,27 @@ function AuditDetail({ auditId, onBack }: Props) {
     useState('');
     const [naturalGasM3, setNaturalGasM3] =
     useState('');
+    const [waterConsumptionM3, setWaterConsumptionM3] =
+    useState('');
+    const [wastewaterM3, setWastewaterM3] =
+    useState('');
+    const [hazardousWasteKg, setHazardousWasteKg] =
+    useState('');
+    const [nonHazardousWasteKg, setNonHazardousWasteKg] =
+    useState('');
+    const [recycledWasteKg, setRecycledWasteKg] =
+    useState('');
+    const [dieselLiters, setDieselLiters] =
+    useState('');
+    const [gasolineLiters, setGasolineLiters] =
+    useState('');
+    const [result, setResult] =
+  useState<AuditCalculationResult | null>(null);
+
+const [calculating, setCalculating] =
+  useState(false);
+  const [calculationError, setCalculationError] =
+  useState<string | null>(null);
 
   useEffect(() => {
     loadAudit();
@@ -37,6 +62,60 @@ function AuditDetail({ auditId, onBack }: Props) {
       setLoading(false);
     }
   }
+
+  async function handleCalculate() {
+
+  setCalculationError(null);
+  setCalculating(true);
+
+  try {
+
+    const request: CalculateAuditRequest = {
+      electricityKwh: Number(electricityKwh),
+      naturalGasM3: Number(naturalGasM3),
+
+      waterConsumptionM3:
+        Number(waterConsumptionM3),
+
+      wastewaterM3:
+        Number(wastewaterM3),
+
+      hazardousWasteKg:
+        Number(hazardousWasteKg),
+
+      nonHazardousWasteKg:
+        Number(nonHazardousWasteKg),
+
+      recycledWasteKg:
+        Number(recycledWasteKg),
+
+      dieselLiters:
+        Number(dieselLiters),
+
+      gasolineLiters:
+        Number(gasolineLiters)
+    };
+
+    const calculation =
+      await calculateAudit(
+        auditId,
+        request
+      );
+
+    setResult(calculation);
+
+  } catch {
+
+    setCalculationError(
+      'No se pudo calcular la auditoría.'
+    );
+
+  } finally {
+
+    setCalculating(false);
+
+  }
+}
 
   if (loading) {
     return <p>Cargando auditoría...</p>;
@@ -154,8 +233,12 @@ function AuditDetail({ auditId, onBack }: Props) {
             </label>
 
             <input
-            type="number"
-            placeholder="1250"
+                type="number"
+                value={waterConsumptionM3}
+                onChange={(e) =>
+                    setWaterConsumptionM3(e.target.value)
+                }
+                placeholder="1250"
             />
 
             <span>m³</span>
@@ -167,8 +250,12 @@ function AuditDetail({ auditId, onBack }: Props) {
             </label>
 
             <input
-            type="number"
-            placeholder="900"
+                type="number"
+                value={wastewaterM3}
+                onChange={(e) =>
+                    setWastewaterM3(e.target.value)
+                }
+                placeholder="900"
             />
 
             <span>m³</span>
@@ -186,9 +273,13 @@ function AuditDetail({ auditId, onBack }: Props) {
     </label>
 
     <input
-      type="number"
-      placeholder="120"
-    />
+  type="number"
+  value={hazardousWasteKg}
+  onChange={(e) =>
+    setHazardousWasteKg(e.target.value)
+  }
+  placeholder="120"
+/>
 
     <span>kg</span>
   </div>
@@ -199,9 +290,13 @@ function AuditDetail({ auditId, onBack }: Props) {
     </label>
 
     <input
-      type="number"
-      placeholder="850"
-    />
+  type="number"
+  value={nonHazardousWasteKg}
+  onChange={(e) =>
+    setNonHazardousWasteKg(e.target.value)
+  }
+  placeholder="850"
+/>
 
     <span>kg</span>
   </div>
@@ -212,9 +307,13 @@ function AuditDetail({ auditId, onBack }: Props) {
     </label>
 
     <input
-      type="number"
-      placeholder="500"
-    />
+  type="number"
+  value={recycledWasteKg}
+  onChange={(e) =>
+    setRecycledWasteKg(e.target.value)
+  }
+  placeholder="500"
+/>
 
     <span>kg</span>
   </div>
@@ -231,9 +330,13 @@ function AuditDetail({ auditId, onBack }: Props) {
     </label>
 
     <input
-      type="number"
-      placeholder="2500"
-    />
+  type="number"
+  value={dieselLiters}
+  onChange={(e) =>
+    setDieselLiters(e.target.value)
+  }
+  placeholder="2500"
+/>
 
     <span>L</span>
   </div>
@@ -244,21 +347,86 @@ function AuditDetail({ auditId, onBack }: Props) {
     </label>
 
     <input
-      type="number"
-      placeholder="800"
-    />
+  type="number"
+  value={gasolineLiters}
+  onChange={(e) =>
+    setGasolineLiters(e.target.value)
+  }
+  placeholder="800"
+/>
 
     <span>L</span>
   </div>
 
 </div>
 
-      <button className="primary-button calculate-button">
-        Calcular auditoría
-      </button>
+      <button
+      className="primary-button calculate-button"
+      onClick={handleCalculate}
+      disabled={calculating}
+    >
+      {calculating
+        ? 'Calculando...'
+        : 'Calcular auditoría'}
+    </button>
+
+    {calculationError && (
+      <p className="error">
+        {calculationError}
+      </p>
+    )}
+
+    {result && (
+      <div className="result-card">
+
+        <h2>
+          Auditoría completada ✓
+        </h2>
+
+        <div className="score">
+          {result.score.toFixed(1)}
+          <span>/ 100</span>
+        </div>
+
+        <div className="result-grid">
+
+          <div>
+            <span>Emisiones</span>
+            <strong>
+              {result.totalEmissions.toFixed(2)}
+            </strong>
+          </div>
+
+          <div>
+            <span>Residuos totales</span>
+            <strong>
+              {result.totalWaste.toFixed(2)} kg
+            </strong>
+          </div>
+
+          <div>
+            <span>Tasa de reciclaje</span>
+            <strong>
+              {result.recyclingRate.toFixed(2)} %
+            </strong>
+          </div>
+
+        </div>
+
+        <button className="primary-button">
+          Descargar PDF
+        </button>
+
+      </div>
+    )}
 
     </div>
   );
+
+  
+
+
+  
 }
 
 export default AuditDetail;

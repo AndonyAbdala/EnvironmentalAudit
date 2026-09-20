@@ -17,6 +17,28 @@ export interface CreateAuditRequest {
   endDate: string;
 }
 
+export interface CalculateAuditRequest {
+  electricityKwh: number;
+  naturalGasM3: number;
+
+  waterConsumptionM3: number;
+  wastewaterM3: number;
+
+  hazardousWasteKg: number;
+  nonHazardousWasteKg: number;
+  recycledWasteKg: number;
+
+  dieselLiters: number;
+  gasolineLiters: number;
+}
+
+export interface AuditCalculationResult {
+  score: number;
+  totalEmissions: number;
+  recyclingRate: number;
+  totalWaste: number;
+}
+
 const API_URL = 'https://localhost:7082/api';
 
 export async function getAudits(): Promise<Audit[]> {
@@ -56,6 +78,31 @@ export async function createAudit(
 
   if (!response.ok) {
     throw new Error('Failed to create audit');
+  }
+
+  return response.json();
+}
+
+export async function calculateAudit(
+  id: string,
+  request: CalculateAuditRequest
+): Promise<AuditCalculationResult> {
+
+  const response = await fetch(
+    `${API_URL}/Audits/${id}/calculate`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      'Failed to calculate audit'
+    );
   }
 
   return response.json();
