@@ -139,6 +139,10 @@ function AuditDetail({ auditId, onBack }: Props) {
     }
   }
 
+  function getScoreWidth(score: number) {
+    return `${Math.max(0, Math.min(100, score))}%`;
+  }
+
   return (
     <div>
       <button onClick={onBack}>← Volver</button>
@@ -362,10 +366,75 @@ function AuditDetail({ auditId, onBack }: Props) {
             {result.overallScore.toFixed(1)}
             <span>/ 100</span>
           </div>
+          <div className="score-breakdown">
+            <div className="score-item">
+              <div className="score-item-header">
+                <span>Energía</span>
+                <strong>{result.energyScore.toFixed(1)}</strong>
+              </div>
+
+              <div className="score-bar">
+                <div
+                  className="score-bar-fill"
+                  style={{
+                    width: getScoreWidth(result.energyScore),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="score-item">
+              <div className="score-item-header">
+                <span>Agua</span>
+                <strong>{result.waterScore.toFixed(1)}</strong>
+              </div>
+
+              <div className="score-bar">
+                <div
+                  className="score-bar-fill"
+                  style={{
+                    width: getScoreWidth(result.waterScore),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="score-item">
+              <div className="score-item-header">
+                <span>Residuos</span>
+                <strong>{result.wasteScore.toFixed(1)}</strong>
+              </div>
+
+              <div className="score-bar">
+                <div
+                  className="score-bar-fill"
+                  style={{
+                    width: getScoreWidth(result.wasteScore),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="score-item">
+              <div className="score-item-header">
+                <span>Emisiones</span>
+                <strong>{result.emissionsScore.toFixed(1)}</strong>
+              </div>
+
+              <div className="score-bar">
+                <div
+                  className="score-bar-fill"
+                  style={{
+                    width: getScoreWidth(result.emissionsScore),
+                  }}
+                />
+              </div>
+            </div>
+          </div>
 
           <div className="result-grid">
             <div>
-              <span>Emisiones</span>
+              <span>Emisiones totales</span>
               <strong>{result.totalEmissions.toFixed(2)}</strong>
             </div>
 
