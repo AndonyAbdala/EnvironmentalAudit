@@ -85,6 +85,26 @@ function AuditDetail({ auditId, onBack }: Props) {
     }
   }
 
+  function goToNextTab() {
+    if (activeTab === "energy") {
+      setActiveTab("water");
+    } else if (activeTab === "water") {
+      setActiveTab("waste");
+    } else if (activeTab === "waste") {
+      setActiveTab("fuel");
+    }
+  }
+
+  function goToPreviousTab() {
+    if (activeTab === "water") {
+      setActiveTab("energy");
+    } else if (activeTab === "waste") {
+      setActiveTab("water");
+    } else if (activeTab === "fuel") {
+      setActiveTab("waste");
+    }
+  }
+
   if (loading) {
     return <p>Cargando auditoría...</p>;
   }
@@ -310,13 +330,27 @@ function AuditDetail({ auditId, onBack }: Props) {
         </div>
       )}
 
-      <button
-        className="primary-button calculate-button"
-        onClick={handleCalculate}
-        disabled={calculating}
-      >
-        {calculating ? "Calculando..." : "Calcular auditoría"}
-      </button>
+      {activeTab === "fuel" && (
+        <button
+          className="primary-button calculate-button"
+          onClick={handleCalculate}
+          disabled={calculating}
+        >
+          {calculating ? "Calculando..." : "Calcular auditoría"}
+        </button>
+      )}
+
+      <div className="tab-navigation">
+        {activeTab !== "energy" && (
+          <button onClick={goToPreviousTab}>← Anterior</button>
+        )}
+
+        {activeTab !== "fuel" && (
+          <button className="primary-button" onClick={goToNextTab}>
+            Siguiente →
+          </button>
+        )}
+      </div>
 
       {calculationError && <p className="error">{calculationError}</p>}
 
