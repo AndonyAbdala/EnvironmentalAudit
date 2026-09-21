@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import './index.css';
+import { useEffect, useState } from "react";
+import "./index.css";
 
 import {
   getAudits,
-  type Audit
-} from './services/auditService';
+  downloadAuditReport,
+  type Audit,
+} from "./services/auditService";
 
-import CreateAuditForm from './components/CreateAuditForm';
-import AuditDetail from './components/AuditDetail';
+import CreateAuditForm from "./components/CreateAuditForm";
+import AuditDetail from "./components/AuditDetail";
 
 function App() {
   const [audits, setAudits] = useState<Audit[]>([]);
@@ -29,35 +30,50 @@ function App() {
 
       setAudits(data);
     } catch {
-      setError(
-        'No se pudieron cargar las auditorías.'
-      );
+      setError("No se pudieron cargar las auditorías.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDownloadPdf(auditId: string) {
+    try {
+      const blob = await downloadAuditReport(auditId);
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `environmental-audit-${auditId}.pdf`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert("No se pudo descargar el PDF.");
     }
   }
 
   if (selectedAuditId) {
     return (
       <div className="app">
-
         <header className="header">
-          <h1>
-            Environmental Audit POC
-          </h1>
+          <h1>Environmental Audit POC</h1>
         </header>
 
         <main className="container">
-
           <AuditDetail
             auditId={selectedAuditId}
             onBack={() => {
               setSelectedAuditId(null);
             }}
           />
-
         </main>
-
       </div>
     );
   }
@@ -65,13 +81,11 @@ function App() {
   if (showCreateForm) {
     return (
       <div className="app">
-
         <header className="header">
           <h1>Environmental Audit POC</h1>
         </header>
 
         <main className="container">
-
           <CreateAuditForm
             onCreated={() => {
               setShowCreateForm(false);
@@ -81,24 +95,19 @@ function App() {
               setShowCreateForm(false);
             }}
           />
-
         </main>
-
       </div>
     );
   }
 
   return (
     <div className="app">
-
       <header className="header">
         <h1>Environmental Audit POC</h1>
       </header>
 
       <main className="container">
-
         <div className="page-header">
-
           <h2>Auditorías</h2>
 
           <button
@@ -107,65 +116,35 @@ function App() {
           >
             + Nueva auditoría
           </button>
-
         </div>
 
-        {loading && (
-          <p>Cargando auditorías...</p>
-        )}
+        {loading && <p>Cargando auditorías...</p>}
 
-        {error && (
-          <p className="error">
-            {error}
-          </p>
-        )}
+        {error && <p className="error">{error}</p>}
 
-        {!loading &&
-          !error &&
-          audits.length === 0 && (
-            <p>
-              No hay auditorías registradas.
-            </p>
-          )}
+        {!loading && !error && audits.length === 0 && (
+          <p>No hay auditorías registradas.</p>
+        )}
 
         {!loading &&
           !error &&
           audits.map((audit) => (
-
-            <div
-              className="audit-card"
-              key={audit.id}
-            >
-
+            <div className="audit-card" key={audit.id}>
               <div>
+                <h3>{audit.companyName}</h3>
 
-                <h3>
-                  {audit.companyName}
-                </h3>
-
-                <p>
-                  {audit.facilityName}
-                </p>
+                <p>{audit.facilityName}</p>
 
                 <p>
-                  Periodo:{' '}
-                  {new Date(
-                    audit.startDate
-                  ).toLocaleDateString()}
-                  {' - '}
-                  {new Date(
-                    audit.endDate
-                  ).toLocaleDateString()}
+                  Periodo: {new Date(audit.startDate).toLocaleDateString()}
+                  {" - "}
+                  {new Date(audit.endDate).toLocaleDateString()}
                 </p>
 
-                <span className="status">
-                  {audit.status}
-                </span>
-
+                <span className="status">{audit.status}</span>
               </div>
 
               <div className="card-actions">
-
                 <button
                   onClick={() => {
                     setSelectedAuditId(audit.id);
@@ -174,18 +153,11 @@ function App() {
                   Ver
                 </button>
 
-                <button>
-                  PDF
-                </button>
-
+                <button onClick={() => handleDownloadPdf(audit.id)}>PDF</button>
               </div>
-
             </div>
-
           ))}
-
       </main>
-
     </div>
   );
 }

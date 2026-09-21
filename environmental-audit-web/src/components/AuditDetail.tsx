@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getAudit,
   calculateAudit,
+  downloadAuditReport,
   type Audit,
   type CalculateAuditRequest,
   type AuditCalculationResult,
@@ -94,6 +95,28 @@ function AuditDetail({ auditId, onBack }: Props) {
 
   if (!audit) {
     return <p>Auditoría no encontrada.</p>;
+  }
+
+  async function handleDownloadPdf() {
+    try {
+      const blob = await downloadAuditReport(auditId);
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `environmental-audit-${auditId}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert("No se pudo descargar el PDF.");
+    }
   }
 
   return (
@@ -302,7 +325,7 @@ function AuditDetail({ auditId, onBack }: Props) {
           <h2>Auditoría completada ✓</h2>
 
           <div className="score">
-            {result.score.toFixed(1)}
+            {result.overallScore.toFixed(1)}
             <span>/ 100</span>
           </div>
 
@@ -323,7 +346,9 @@ function AuditDetail({ auditId, onBack }: Props) {
             </div>
           </div>
 
-          <button className="primary-button">Descargar PDF</button>
+          <button className="primary-button" onClick={handleDownloadPdf}>
+            Descargar PDF
+          </button>
         </div>
       )}
     </div>
