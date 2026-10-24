@@ -1,19 +1,30 @@
 services:
-  postgres:
+  db:
     image: postgres:15
     container_name: environmental-audit-db
-    restart: unless-stopped
-
     environment:
       POSTGRES_DB: environmental_audit
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
-
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - environmental_audit_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./EnvironmentalAudit.Api
+      dockerfile: Dockerfile
+    container_name: environmental-audit-api
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=environmental_audit;Username=postgres;Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      - db
 
 volumes:
-  postgres_data:
+  environmental_audit_data:
+    external: true
+    name: environmentalaudit_postgres_data

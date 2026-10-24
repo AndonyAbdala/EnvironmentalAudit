@@ -33,10 +33,15 @@ export interface CalculateAuditRequest {
 }
 
 export interface AuditCalculationResult {
-  score: number;
+  auditId: string;
   totalEmissions: number;
-  recyclingRate: number;
   totalWaste: number;
+  recyclingRate: number;
+  energyScore: number;
+  waterScore: number;
+  wasteScore: number;
+  emissionsScore: number;
+  overallScore: number;
 }
 
 const API_URL = "https://localhost:7082/api";

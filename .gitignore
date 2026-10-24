@@ -5,6 +5,7 @@
 bin/
 obj/
 .vs/
+.env
 
 # User-specific files
 *.user
