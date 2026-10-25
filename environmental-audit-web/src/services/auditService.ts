@@ -44,7 +44,7 @@ export interface AuditCalculationResult {
   overallScore: number;
 }
 
-const API_URL = "https://localhost:7082/api";
+const API_URL = "/api";
 
 export async function getAudits(): Promise<Audit[]> {
   const response = await fetch(`${API_URL}/Audits`);

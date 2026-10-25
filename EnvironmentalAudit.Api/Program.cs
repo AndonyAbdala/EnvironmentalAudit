@@ -45,7 +45,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment() &&
+    Environment.GetEnvironmentVariable("DOCKER") != "true")
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("ReactPolicy");
 
